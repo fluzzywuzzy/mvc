@@ -6,6 +6,7 @@ use \Webbmaffian\MVC\Helper\Problem;
 use \Webbmaffian\ORM\DB;
 
 abstract class Model implements \JsonSerializable {
+	const DB = 'app';
 	const TABLE = '';
 	const PRIMARY_KEY = 'id';
 	const IS_AUTO_INCREMENT = true;
@@ -17,13 +18,18 @@ abstract class Model implements \JsonSerializable {
 		return static::TABLE;
 	}
 
+
+	static public function db() {
+		return DB::instance(static::DB);
+	}
+
 	
 	static public function get_by_id($id = 0) {
 		if(!is_numeric($id)) {
 			throw new Problem(get_called_class() . ' ID must be numeric');
 		}
 		
-		$db = DB::instance();
+		$db = self::db();
 		
 		$data = $db->get_row('SELECT * FROM ' . static::get_table() . ' WHERE ' . static::PRIMARY_KEY . ' = ?', $id);
 		
@@ -44,7 +50,7 @@ abstract class Model implements \JsonSerializable {
 			throw new Problem(get_called_class() . ' ID must not be set');
 		}
 		
-		$db = DB::instance();
+		$db = self::db();
 		
 		if(!$db->insert(static::get_table(), $data)) {
 			throw new Problem(get_called_class() . ' could not be created.');
@@ -64,7 +70,7 @@ abstract class Model implements \JsonSerializable {
 			throw new Problem(get_called_class() . ' ID must not be set');
 		}
 
-		$db = DB::instance();
+		$db = self::db();
 		$result = $db->insert_update(self::get_table(), $data, $unique_keys, $dont_update_keys, static::PRIMARY_KEY);
 		
 		if(!$result) {
@@ -73,7 +79,7 @@ abstract class Model implements \JsonSerializable {
 
 		if($id = $result->fetch_value()) $data[static::PRIMARY_KEY] = $id;
 		
-		return new static($data, $tenant_id);
+		return new static($data);
 	}
 	
 	
@@ -119,7 +125,7 @@ abstract class Model implements \JsonSerializable {
 
 	
 	public function update($data = array()) {
-		$db = DB::instance();
+		$db = self::db();
 		
 		$this->data = array_merge($this->data, $data);
 		
@@ -130,7 +136,7 @@ abstract class Model implements \JsonSerializable {
 	
 	
 	public function delete() {
-		$db = DB::instance();
+		$db = self::db();
 		
 		return $db->delete(static::get_table(), array(
 			static::PRIMARY_KEY => $this->data[static::PRIMARY_KEY]

@@ -23,7 +23,18 @@ abstract class Model_Collection {
 
 	
 	static public function get_table() {
-		return static::TABLE;
+		return constant(static::get_model_class() . '::TABLE');
+	}
+
+
+	static public function db() {
+		$class = static::get_model_class();
+		return $class::db();
+	}
+
+
+	static public function get_model_class() {
+		return trim(str_replace('Collection', '', get_called_class()), '_');
 	}
 
 
@@ -293,7 +304,8 @@ abstract class Model_Collection {
 	
 	
 	protected function run() {
-		$db = DB::instance();
+		$db = self::db();
+
 		if(!$this->results = $db->query($this->get_query())->fetch_all()) {
 			$this->results = array();
 		}
