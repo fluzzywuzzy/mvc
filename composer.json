@@ -1,13 +1,17 @@
 {
 	"name": "webbmaffian/mvc",
 	"description": "Webbmaffian MVC framework",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Mattias Forsman",
-            "email": "mattias@webbmaffian.se"
-        }
-    ],
+	"license": "proprietary",
+	"authors": [
+		{
+			"name": "Mattias Forsman",
+			"email": "mattias@webbmaffian.se"
+		},
+		{
+			"name": "Ivar Johansson",
+			"email": "ivar@webbmaffian.se"
+		}
+	],
 	"autoload": {
 		"psr-4": {
 			"Webbmaffian\\MVC\\": "src/"
@@ -16,10 +20,10 @@
 	"config": {
 		"classmap-authoritative": true
 	},
-    "require": {
+	"require": {
 		"php": "^7.0.0",
 		"ext-mysqli": "*",
-		"webbmaffian/orm": "*",
+		"webbmaffian/orm": "^1.1.0",
 		"josegonzalez/dotenv": "*",
 		"firebase/php-jwt": "^5.0"
 	}
