@@ -23,4 +23,18 @@ class Format {
 		
 		return $path . '?' . http_build_query($params);
 	}
+	
+	
+	static public function encode($code) {
+		return addslashes(htmlentities($code, ENT_NOQUOTES | ENT_HTML5));
+	}
+
+
+	static public function decode($code, $leave_slashes = false) {
+		if($leave_slashes) {
+			return html_entity_decode($code, ENT_NOQUOTES | ENT_HTML5);
+		}
+
+		return stripslashes(html_entity_decode($code, ENT_QUOTES | ENT_HTML5));
+	}
 }
