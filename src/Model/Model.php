@@ -113,6 +113,8 @@ abstract class Model implements \JsonSerializable {
 	
 	
 	public function __call($name, $args = array()) {
+		if(strpos($name, '_') === false) return;
+		
 		list($type, $name) = explode('_', $name, 2);
 		
 		if($type === 'get') {
