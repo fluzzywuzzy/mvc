@@ -27,8 +27,15 @@ class Lang {
 			mkdir(Helper::root_dir() . '/data/lang-cache', 0775, true);
 		}
 
+		if(defined('LANG')) {
+			self::$lang = LANG;
+		} elseif(Auth::get_lang()) {
+			self::$lang = Auth::get_lang();
+		} else {
+			self::$lang = self::DEFAULT_LANG;
+		}
+
 		self::$cache_path = Helper::root_dir() . '/data/lang-cache';
-		self::$lang = Auth::get_lang() ?: self::DEFAULT_LANG;
 		self::$use_cache = $cache;
 		self::$translations_file = Helper::root_dir() . '/data/translations.csv';
 		self::$setted_up = true;
