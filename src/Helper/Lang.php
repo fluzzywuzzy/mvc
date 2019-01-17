@@ -52,7 +52,7 @@ class Lang {
 		if(!self::$use_cache || false === (self::$strings = self::cache_get($lang_slug, filemtime(self::$translations_file)))) {
 			self::$strings = array();
 			
-			$rows = self::parse_csv(mb_convert_encoding(file_get_contents(self::$translations_file), 'UTF-8', 'Windows-1252'), ';');
+			$rows = self::parse_csv(file_get_contents(self::$translations_file));
 			
 			if(empty($rows)) {
 				return;
