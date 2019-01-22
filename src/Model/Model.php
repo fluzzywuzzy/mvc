@@ -19,6 +19,15 @@ abstract class Model implements \JsonSerializable {
 	}
 
 
+	static public function get_column_names() {
+		if(!isset($_ENV['DB_NAME'])) throw new Problem('Missing required environment variable DB_NAME.');
+
+		$db = self::db();
+		$query = 'SELECT column_name FROM information_schema.columns WHERE table_schema = :db_name AND table_name = :table_name';
+		return $db->get_column($query, $_ENV['DB_NAME'], static::TABLE);
+	}
+
+
 	static public function db() {
 		return DB::instance(static::DB);
 	}
