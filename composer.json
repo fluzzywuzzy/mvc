@@ -25,6 +25,7 @@
 		"ext-mysqli": "*",
 		"webbmaffian/orm": "^1.1.0",
 		"josegonzalez/dotenv": "*",
-		"firebase/php-jwt": "^5.0"
+		"firebase/php-jwt": "^5.0",
+		"malios/php-to-ascii-table": "^1.0.1"
 	}
 }
