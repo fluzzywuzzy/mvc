@@ -92,16 +92,17 @@ class Helper {
 
 
 	static public function append_to_url($url, $args) {
-		$parts = parse_url($_SERVER['REQUEST_URI']);
-
+		$parts = parse_url($url);
+	
 		if(!empty($parts['query'])) {
 			$query_arr = array();
 			parse_str($parts['query'], $query_arr);
 			$args = array_merge($query_arr, $args);
 		}
-
+		
 		$args = http_build_query($args);
-		return $parts['path'] . '?' . $args;
+		$base = (!empty($parts['scheme']) ? $parts['scheme'] . '://' : '') . (!empty($parts['host']) ? $parts['host'] . (!empty($parts['port']) ? ':' . $parts['port'] : '') : '');
+		return $base . $parts['path'] . '?' . $args;
 	}
 
 
