@@ -64,7 +64,7 @@ class View {
 	public function output($wrap = true) {
 		array_unshift($this->_data['breadcrumb'], array(
 			'url' => '/',
-			'label' => 'Home'
+			'label' => Lang::get_string('Home')
 		));
 		
 		extract($this->_data);
