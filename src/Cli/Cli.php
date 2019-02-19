@@ -130,10 +130,10 @@ class Cli {
 		}
 
 		if(!empty($this->data)) {
-			$result = $class::$method($this->data);
+			$result = $class::{$this->method}($this->data);
 		}
 		else {
-			$result = $class::$method();
+			$result = $class::{$this->method}();
 		}
 
 		if(is_string($result) || is_numeric($result)) {
