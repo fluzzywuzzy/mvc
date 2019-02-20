@@ -47,22 +47,15 @@ class Sanitize {
 
 
 	static public function name($name = '') {
+		$name = filter_var($name, FILTER_SANITIZE_STRING);
 		$name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
-
-		if(Helper::match('/[^\p{L}]/u', $name)) {
-			return '';
-		}
 
 		return $name;
 	}
 
 
 	static public function text($text) {
-		if(Helper::match('/[^\p{L}0-9_\-\/\s]/ui', $text)) {
-			return '';
-		}
-
-		return $text;
+		return filter_var($text, FILTER_SANITIZE_STRING);
 	}
 	
 	
