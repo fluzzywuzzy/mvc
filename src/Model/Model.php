@@ -11,6 +11,9 @@ abstract class Model implements \JsonSerializable {
 	const PRIMARY_KEY = 'id';
 	const IS_AUTO_INCREMENT = true;
 	
+	// Hidden columns should be defined as an assoc. array: column_name => boolean
+	const HIDDEN_COLUMNS = array();
+
 	protected $data;
 
 	
@@ -34,6 +37,13 @@ abstract class Model implements \JsonSerializable {
 
 	
 	static public function get_by_id($id = 0) {
+		$data = self::get_model_data($id);
+		
+		return new static($data);
+	}
+
+
+	static protected function get_model_data($id) {
 		if(!is_numeric($id)) {
 			throw new Problem(get_called_class() . ' ID must be numeric');
 		}
@@ -45,8 +55,8 @@ abstract class Model implements \JsonSerializable {
 		if(!$data) {
 			throw new Problem('Could not find ' . get_called_class() . ' with ID ' . $id);
 		}
-		
-		return new static($data);
+
+		return $data;
 	}
 	
 	
@@ -134,6 +144,11 @@ abstract class Model implements \JsonSerializable {
 		}
 	}
 
+
+	public function reload() {
+		$this->data = self::get_model_data($this->data[static::PRIMARY_KEY]);
+	}
+
 	
 	public function update($data = array()) {
 		$db = self::db();
@@ -156,7 +171,7 @@ abstract class Model implements \JsonSerializable {
 	
 	
 	public function get_data() {
-		return $this->data;
+		return array_diff_key($this->data, static::HIDDEN_COLUMNS);
 	}
 	
 	

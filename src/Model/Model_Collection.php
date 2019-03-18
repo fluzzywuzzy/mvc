@@ -5,7 +5,7 @@ namespace Webbmaffian\MVC\Model;
 use \Webbmaffian\MVC\Helper\Problem;
 use \Webbmaffian\ORM\DB;
 
-abstract class Model_Collection {
+abstract class Model_Collection implements \JsonSerializable {
 	const TABLE = '';
 	
 	protected $select = array();
@@ -298,6 +298,8 @@ abstract class Model_Collection {
 		$this->order_by = array();
 		$this->group_by = array();
 		$this->rows = array();
+		$this->limit = 0;
+		$this->offset = 0;
 
 		$this->select_raw('COUNT(*) AS count');
 		$this->run();
@@ -329,15 +331,16 @@ abstract class Model_Collection {
 			$value = $value->format('Y-m-d H:i:s');
 		}
 
-		if(is_string($value)) {
+		if($value === 'null') {
+			$value = null;
+		}
+		elseif(is_string($value)) {
 			return "'" . $value . "'";
 		}
-
-		if(is_bool($value)) {
+		elseif(is_bool($value)) {
 			return (int)$value;
 		}
-
-		if(is_array($value)) {
+		elseif(is_array($value)) {
 			$value = array_map(function($e) {
 				return "'" . $e . "'";
 			}, $value);
@@ -355,5 +358,10 @@ abstract class Model_Collection {
 
 	static protected function format_raw_value($value) {
 		return str_replace('"', '\'', $value);
+	}
+
+
+	public function jsonSerialize() {
+		return $this->get();
 	}
 }

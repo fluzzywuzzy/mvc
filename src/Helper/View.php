@@ -16,6 +16,9 @@ class View {
 
 	public function __construct($view, $shared = false) {
 		$this->_view = self::path($view, $shared);
+		if(Auth::get_lang()) {
+			$this->_data['body_class'][] = 'lang-' . Auth::get_lang();
+		}
 	}
 
 
@@ -64,7 +67,7 @@ class View {
 	public function output($wrap = true) {
 		array_unshift($this->_data['breadcrumb'], array(
 			'url' => '/',
-			'label' => 'Home'
+			'label' => Lang::get_string('Home')
 		));
 		
 		extract($this->_data);

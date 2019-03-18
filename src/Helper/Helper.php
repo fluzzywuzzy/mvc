@@ -38,14 +38,12 @@ class Helper {
 
 
 	static public function get_controller($controller) {
-		if(!defined('ENDPOINT')) throw new Problem("ENDPOINT constant is not defined.");
-
 		if(substr($controller, -11) !== '_Controller') {
 			$controller .= '_Controller';
 		}
 		
 		if(!isset(self::$controllers[$controller])) {
-			$file_path = Helper::root_dir() . '/app/controllers/' . ENDPOINT . '/' . strtolower(str_replace('_', '-', $controller)) . '.php';
+			$file_path = Helper::root_dir() . '/app/controllers/' . (defined('ENDPOINT') ? (ENDPOINT . '/') : '') . strtolower(str_replace('_', '-', $controller)) . '.php';
 
 			if(!file_exists($file_path)) {
 				throw new Problem('File path does not exist: ' . $file_path);
@@ -92,16 +90,17 @@ class Helper {
 
 
 	static public function append_to_url($url, $args) {
-		$parts = parse_url($_SERVER['REQUEST_URI']);
-
+		$parts = parse_url($url);
+	
 		if(!empty($parts['query'])) {
 			$query_arr = array();
 			parse_str($parts['query'], $query_arr);
 			$args = array_merge($query_arr, $args);
 		}
-
+		
 		$args = http_build_query($args);
-		return $parts['path'] . '?' . $args;
+		$base = (!empty($parts['scheme']) ? $parts['scheme'] . '://' : '') . (!empty($parts['host']) ? $parts['host'] . (!empty($parts['port']) ? ':' . $parts['port'] : '') : '');
+		return $base . $parts['path'] . '?' . $args;
 	}
 
 
