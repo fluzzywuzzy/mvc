@@ -262,9 +262,9 @@ abstract class Model_Collection {
 
 		if(!empty($this->where_raw)) {
 			if(empty($this->where)) {
-				$q['where'] = 'WHERE ' . implode(' ', $this->where_raw);
+				$q['where'] = 'WHERE ' . implode(' AND ', $this->where_raw);
 			} else {
-				$q['where'] .= ' AND (' . implode(' ', $this->where_raw) . ')';
+				$q['where'] .= ' AND (' . implode(') AND (', $this->where_raw) . ')';
 			}
 		}
 		
@@ -293,10 +293,13 @@ abstract class Model_Collection {
 
 
 	public function get_count() {
+		// Reset everything but joins and conditions
 		$this->select = array();
 		$this->order_by = array();
-		$this->select_raw('COUNT(*) AS count');
+		$this->group_by = array();
 		$this->rows = array();
+
+		$this->select_raw('COUNT(*) AS count');
 		$this->run();
 
 		return isset($this->results[0]['count']) ? $this->results[0]['count'] : false;
