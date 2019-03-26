@@ -204,18 +204,23 @@ abstract class Model_Collection implements \JsonSerializable {
 			$class_name = trim(str_replace('Collection', '', get_class($this)), '_');
 			
 			foreach($this->results as $data) {
-				if($this->rows_key && isset($data[$this->rows_key])) {
-					$this->rows[$data[$this->rows_key]] = new $class_name($data);
-				}
-				else {
-					$this->rows[] = new $class_name($data);
-				}
+				$this->add_row($data, $class_name);
 			}
 			
 			$this->results = null;
 		}
 		
 		return $this->rows;
+	}
+
+
+	protected function add_row($data, $class_name) {
+		if($this->rows_key && isset($data[$this->rows_key])) {
+			$this->rows[$data[$this->rows_key]] = new $class_name($data);
+		}
+		else {
+			$this->rows[] = new $class_name($data);
+		}
 	}
 
 
@@ -229,9 +234,9 @@ abstract class Model_Collection implements \JsonSerializable {
 	public function num_rows() {
 		return (is_array($this->rows) ? sizeof($this->rows) : 0);
 	}
-	
-	
-	public function get_query() {
+
+
+	protected function get_query_parts() {
 		$q = array();
 		
 		// Ensure we have no duplications
@@ -287,8 +292,13 @@ abstract class Model_Collection implements \JsonSerializable {
 		if($this->offset) {
 			$q['offset'] = 'OFFSET ' . $this->offset;
 		}
-		
-		return implode("\n", $q);
+
+		return $q;
+	}
+	
+	
+	public function get_query() {
+		return implode("\n", $this->get_query_parts());
 	}
 
 
