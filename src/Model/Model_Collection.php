@@ -5,7 +5,7 @@ namespace Webbmaffian\MVC\Model;
 use \Webbmaffian\MVC\Helper\Problem;
 use \Webbmaffian\ORM\DB;
 
-abstract class Model_Collection implements \JsonSerializable {
+abstract class Model_Collection implements \JsonSerializable, \Countable {
 	const TABLE = '';
 	
 	protected $select = array();
@@ -371,7 +371,17 @@ abstract class Model_Collection implements \JsonSerializable {
 	}
 
 
+	// Interface for json_encode()
 	public function jsonSerialize() {
 		return $this->get();
+	}
+
+
+	// Interface for count()
+	public function count() {
+
+		// We don't want to run any query here, so we use $this->rows directly
+		// instead of $this->get().
+		return count($this->rows);
 	}
 }
