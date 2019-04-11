@@ -5,7 +5,7 @@ namespace Webbmaffian\MVC\Model;
 use \Webbmaffian\MVC\Helper\Problem;
 use \Webbmaffian\ORM\DB;
 
-abstract class Model_Collection implements \JsonSerializable {
+abstract class Model_Collection implements \JsonSerializable, \Countable {
 	const TABLE = '';
 	
 	protected $select = array();
@@ -204,18 +204,23 @@ abstract class Model_Collection implements \JsonSerializable {
 			$class_name = trim(str_replace('Collection', '', get_class($this)), '_');
 			
 			foreach($this->results as $data) {
-				if($this->rows_key && isset($data[$this->rows_key])) {
-					$this->rows[$data[$this->rows_key]] = new $class_name($data);
-				}
-				else {
-					$this->rows[] = new $class_name($data);
-				}
+				$this->add_row($data, $class_name);
 			}
 			
 			$this->results = null;
 		}
 		
 		return $this->rows;
+	}
+
+
+	protected function add_row($data, $class_name) {
+		if($this->rows_key && isset($data[$this->rows_key])) {
+			$this->rows[$data[$this->rows_key]] = new $class_name($data);
+		}
+		else {
+			$this->rows[] = new $class_name($data);
+		}
 	}
 
 
@@ -229,9 +234,9 @@ abstract class Model_Collection implements \JsonSerializable {
 	public function num_rows() {
 		return (is_array($this->rows) ? sizeof($this->rows) : 0);
 	}
-	
-	
-	public function get_query() {
+
+
+	protected function get_query_parts() {
 		$q = array();
 		
 		// Ensure we have no duplications
@@ -262,9 +267,9 @@ abstract class Model_Collection implements \JsonSerializable {
 
 		if(!empty($this->where_raw)) {
 			if(empty($this->where)) {
-				$q['where'] = 'WHERE ' . implode(' ', $this->where_raw);
+				$q['where'] = 'WHERE ' . implode(' AND ', $this->where_raw);
 			} else {
-				$q['where'] .= ' AND (' . implode(' ', $this->where_raw) . ')';
+				$q['where'] .= ' AND (' . implode(') AND (', $this->where_raw) . ')';
 			}
 		}
 		
@@ -287,14 +292,21 @@ abstract class Model_Collection implements \JsonSerializable {
 		if($this->offset) {
 			$q['offset'] = 'OFFSET ' . $this->offset;
 		}
-		
-		return implode("\n", $q);
+
+		return $q;
+	}
+	
+	
+	public function get_query() {
+		return implode("\n", $this->get_query_parts());
 	}
 
 
 	public function get_count() {
+		// Reset everything but joins and conditions
 		$this->select = array();
 		$this->order_by = array();
+		$this->group_by = array();
 		$this->rows = array();
 		$this->limit = 0;
 		$this->offset = 0;
@@ -359,7 +371,17 @@ abstract class Model_Collection implements \JsonSerializable {
 	}
 
 
+	// Interface for json_encode()
 	public function jsonSerialize() {
 		return $this->get();
+	}
+
+
+	// Interface for count()
+	public function count() {
+
+		// We don't want to run any query here, so we use $this->rows directly
+		// instead of $this->get().
+		return count($this->rows);
 	}
 }
