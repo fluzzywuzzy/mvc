@@ -1,8 +1,7 @@
 <?php
 
 namespace Webbmaffian\MVC\Helper;
-
-use \Webbmaffian\ORM\DB;
+use Webbmaffian\ORM\DB;
 
 class Sanitize {
 
@@ -67,49 +66,55 @@ class Sanitize {
 	
 	
 	static public function phone($phone) {
-		$phone = preg_replace('/[^0-9\+]+/', '', (string)$phone);
-		
-		if(!preg_match('/^\+?[0-9]{5,}$/', $phone)) {
-			return '';
-		}
-		
-		if(substr($phone, 0, 2) === '00') {
-			$phone = '+' . substr($phone, 2);
-		}
-		elseif($phone[0] !== '+') {
-			if($phone[0] === '0') {
-				$phone = substr($phone, 1);
+		$phone = preg_replace('/[^\d\+]+/', '', (string)$phone);
+
+		if($phone[0] !== '+') {
+			if(strncmp($phone, '00', 2) === 0) {
+				$phone = substr($phone, 2);
 			}
-			
-			$phone = '+46' . $phone;
+			else {
+				$phone = '46' . ltrim($phone, '0');
+			}
+
+			$phone = '+' . $phone;
 		}
-		
+
 		return $phone;
 	}
 	
 	
-	static public function ssn($ssn, $with_dash = true) {
-		$ssn = preg_replace('/[\D]+/', '', $ssn);
+	static public function ssn($ssn, $with_dash = true, $short = false) {
+		$ssn = preg_replace('/[\D]+/', '', (string)$ssn);
 
-		if(strlen($ssn) === 10) {
-			$current_year = (string)date('Y');
-			$current_century = substr($current_year, 0, 2);
-			$ssn_year = (string)substr($ssn, 0, 2);
-
-			$maybe_year = intval($current_century . $ssn_year);
-
-			if((int)$current_year - $maybe_year < 18) {
-				$maybe_year -= 100;
+		if($short) {
+			if(strlen($ssn) === 12) {
+				$ssn = substr($ssn, 2);
 			}
-
-			$ssn = $maybe_year . substr($ssn, 2);
+			elseif(strlen($ssn) !== 10) {
+				throw new Problem('Invalid SSN.');
+			}
 		}
-		elseif(strlen($ssn) !== 12) {
-			throw new Problem('Invalid SSN.');
+		else {
+			if(strlen($ssn) === 10) {
+				$current_year = (string)date('Y');
+				$current_century = substr($current_year, 0, 2);
+				$ssn_year = (string)substr($ssn, 0, 2);
+
+				$maybe_year = intval($current_century . $ssn_year);
+
+				if((int)$current_year - $maybe_year < 18) {
+					$maybe_year -= 100;
+				}
+
+				$ssn = $maybe_year . substr($ssn, 2);
+			}
+			elseif(strlen($ssn) !== 12) {
+				throw new Problem('Invalid SSN.');
+			}
 		}
 		
 		if($with_dash) {
-			return implode('-', str_split($ssn, 8));
+			return implode('-', str_split($ssn, ($short ? 6 : 8)));
 		}
 		else {
 			return $ssn;
