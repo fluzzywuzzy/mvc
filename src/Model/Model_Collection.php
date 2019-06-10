@@ -23,7 +23,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 
 	
 	static public function get_table() {
-		return constant(static::get_model_class() . '::TABLE');
+		return (static::get_model_class())::get_table();
 	}
 
 
