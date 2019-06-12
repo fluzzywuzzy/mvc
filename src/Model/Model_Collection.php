@@ -66,7 +66,11 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	
 	
 	public function join($join) {
-		$this->join[] = $join;
+		$this->join[] = preg_replace_callback('/(\=\s*([a-z][^\s\.]*)(\z|\s))|(\s([a-z][^\s\.]*)\s*\=)/i', function($matches) {
+			$space = (!empty($matches[3]) ? $matches[3] : ' ');
+
+			return sprintf(($matches[0][0] === '=' ? '= %1$s%2$s' : '%2$s%1$s ='), static::format_key(isset($matches[5]) ? $matches[5] : $matches[2]), $space);
+		}, $join);
 		
 		return $this;
 	}
