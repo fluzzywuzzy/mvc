@@ -66,12 +66,64 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	
 	
 	public function join($join) {
-		$this->join[] = preg_replace_callback('/(\=\s*([a-z][^\s\.]*)(\z|\s))|(\s([a-z][^\s\.]*)\s*\=)/i', function($matches) {
+		$this->join_raw(preg_replace_callback('/(\=\s*([a-z][^\s\.]*)(\z|\s))|(\s([a-z][^\s\.]*)\s*\=)/i', function($matches) {
 			$space = (!empty($matches[3]) ? $matches[3] : ' ');
 
 			return sprintf(($matches[0][0] === '=' ? '= %1$s%2$s' : '%2$s%1$s ='), static::format_key(isset($matches[5]) ? $matches[5] : $matches[2]), $space);
-		}, $join);
+		}, $join));
 		
+		return $this;
+	}
+
+
+	/*
+	 * Usage:
+	 * 
+	 * left_join('my_table', 'my_optional_alias', ['my_column' => 'someone_elses_column'])
+	 */
+	public function left_join() {
+		$args = func_get_args();
+		$num_args = count($args);
+
+		// With alias
+		if($num_args === 3) {
+			list($table, $alias, $condition) = $args;
+		}
+
+		// Without alias
+		elseif($num_args === 2) {
+			list($table, $condition) = $args;
+
+			$alias = false;
+		}
+
+		else {
+			throw new Problem('Invalid number of arguments.');
+		}
+
+		if(!is_array($condition) || empty($condition)) {
+			throw new Problem('Condition must be an array.');
+		}
+
+		$on = array();
+
+		foreach($condition as $joined_column => $column) {
+			$on[] = static::format_key($joined_column, $alias ?: $table) . ' = ' . static::format_key($column);
+		}
+
+		if($alias) {
+			$table .= ' AS ' . $alias;
+		}
+
+		$this->join_raw('LEFT JOIN ' . $table . ' ON ' . implode(' AND ', $on));
+
+		return $this;
+	}
+
+
+	public function join_raw($join) {
+		$this->join[] = $join;
+
 		return $this;
 	}
 	
