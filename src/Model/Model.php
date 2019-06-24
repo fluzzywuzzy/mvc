@@ -24,11 +24,7 @@ abstract class Model implements \JsonSerializable {
 
 
 	static public function get_column_names() {
-		if(!isset($_ENV['DB_NAME'])) throw new Problem('Missing required environment variable DB_NAME.');
-
-		$db = self::db();
-		$query = 'SELECT column_name FROM information_schema.columns WHERE table_schema = :db_name AND table_name = :table_name';
-		return $db->get_column($query, $_ENV['DB_NAME'], static::TABLE);
+		return static::db()->get_column_names(static::get_table());
 	}
 
 
@@ -71,6 +67,7 @@ abstract class Model implements \JsonSerializable {
 		}
 		
 		$db = self::db();
+		$data = static::alter_data($data);
 		
 		if(!$db->insert(static::get_table(), $data)) {
 			throw new Problem(get_called_class() . ' could not be created.');
@@ -91,6 +88,7 @@ abstract class Model implements \JsonSerializable {
 		}
 
 		$db = self::db();
+		$data = static::alter_data($data);
 		$result = $db->insert_update(self::get_table(), $data, $unique_keys, $dont_update_keys, static::PRIMARY_KEY);
 		
 		if(!$result) {
@@ -100,6 +98,11 @@ abstract class Model implements \JsonSerializable {
 		if($id = $result->fetch_value()) $data[static::PRIMARY_KEY] = $id;
 		
 		return new static($data);
+	}
+
+
+	static protected function alter_data($data, $id = null, $current_data = null) {
+		return $data;
 	}
 	
 	
