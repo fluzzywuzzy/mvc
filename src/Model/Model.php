@@ -2,8 +2,9 @@
 
 namespace Webbmaffian\MVC\Model;
 
-use \Webbmaffian\MVC\Helper\Problem;
-use \Webbmaffian\ORM\DB;
+use Webbmaffian\MVC\Helper\Problem;
+use Webbmaffian\ORM\DB;
+use Webbmaffian\MVC\Helper\Audit_Log;
 
 abstract class Model implements \JsonSerializable {
 	const DB = 'app';
@@ -177,5 +178,22 @@ abstract class Model implements \JsonSerializable {
 	
 	public function jsonSerialize() {
 		return $this->get_data();
+	}
+
+
+	public function audit() {
+		$args = func_get_args();
+		
+		if(empty($args)) {
+			throw new Problem('Missing audit note.');
+		}
+		
+		$note = array_shift($args);
+		
+		if(!empty($args)) {
+			$note = vsprintf($note, $args);
+		}
+		
+		return Audit_Log::add($note, static::get_class_name(), $this->data[static::PRIMARY_KEY]);
 	}
 }
