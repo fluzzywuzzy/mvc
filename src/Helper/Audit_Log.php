@@ -15,7 +15,6 @@ class Audit_Log {
 
 		try {
 			Audit::create(array(
-				'tenant_id' => (int)Auth::get_tenant_id(),
 				'user_id' => (int)Auth::get_id(),
 				'object_type' => $object_type,
 				'object_id' => $object_id,
