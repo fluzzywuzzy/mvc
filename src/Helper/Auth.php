@@ -4,6 +4,7 @@ namespace Webbmaffian\MVC\Helper;
 
 use Webbmaffian\ORM\DB;
 use Webbmaffian\MVC\Model\Authable;
+use Exception;
 
 class Auth {
 	static public function is_signed_in() {
@@ -56,8 +57,13 @@ class Auth {
 			'last_active' => time()
 		);
 		
-		static::load_capabilities();
-		static::load_available_customers();
+		try {
+			static::load_capabilities();
+			static::load_available_customers();
+		} catch(Exception $e) {
+			self::sign_out();
+			throw new Problem('Unable to load capabilities');
+		}
 	}
 	
 	
@@ -134,12 +140,13 @@ class Auth {
 		if(!self::is_signed_in() || !isset($_SESSION['user']['caps'])) return false;
 		
 		if($customer_ids = array_filter(array_keys($_SESSION['user']['caps']))) {
-			$customers = Customer::collection()->select('*')->with_entity()->where('entity_id', $customer_ids)->order_by('name')->get();
+			$db = DB::instance();
+			$customers = $db->get_result('SELECT id, name FROM customers WHERE id IN (' . implode(',', $customer_ids) . ') AND status = "active" ORDER BY name');
 
 			$_SESSION['user']['available_customers'] = array();
 			
 			foreach($customers as $customer) {
-				$_SESSION['user']['available_customers'][intval($customer->get_id())] = $customer->get_name();
+				$_SESSION['user']['available_customers'][(int)$customer['id']] = $customer['name'];
 			}
 		}
 		
