@@ -116,6 +116,11 @@ abstract class Model implements \JsonSerializable {
 		
 		return new $class_name;
 	}
+
+
+	static public function stmt() {
+		return new Model_Stmt(get_called_class());
+	}
 	
 	
 	public function __construct($data = array()) {
