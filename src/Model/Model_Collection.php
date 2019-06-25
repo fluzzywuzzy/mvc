@@ -383,9 +383,13 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	}
 	
 	
-	static protected function format_key($key) {
+	static protected function format_key($key, $table = null) {
 		if(strpos($key, '.') === false) {
-			$key = self::get_table() . '.' . $key;
+			if(is_null($table)) {
+				$table = self::get_table();
+			}
+			
+			$key = $table . '.' . $key;
 		}
 		
 		return $key;
