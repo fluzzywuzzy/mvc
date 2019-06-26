@@ -101,7 +101,9 @@ class Auth {
 
 	
 	static public function get_user() {
-		return User::get_by_id(self::get_id());
+		Helper::deprecated();
+
+		return self::user_id();
 	}
 	
 	
