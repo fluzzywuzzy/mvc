@@ -103,7 +103,7 @@ class Auth {
 	static public function get_user() {
 		Helper::deprecated();
 
-		return self::user_id();
+		return self::get_id();
 	}
 	
 	
