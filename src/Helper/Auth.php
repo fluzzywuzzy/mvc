@@ -56,6 +56,8 @@ class Auth {
 			'signed_in' => time(),
 			'last_active' => time()
 		);
+
+		$_SESSION['notices'] = array();
 		
 		try {
 			static::load_capabilities();

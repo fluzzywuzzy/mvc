@@ -2,15 +2,14 @@
 
 namespace Webbmaffian\MVC\Controller;
 
-use \Webbmaffian\MVC\Helper\View;
-use \Webbmaffian\MVC\Helper\Value;
-use \Webbmaffian\MVC\Helper\Helper;
-use \Webbmaffian\MVC\Helper\Problem;
+use Webbmaffian\MVC\Helper\View;
+use Webbmaffian\MVC\Helper\Value;
+use Webbmaffian\MVC\Helper\Helper;
+use Webbmaffian\MVC\Helper\Problem;
 
 abstract class Controller {
 	const MUST_SIGN_IN = true;
 	
-	protected $notices = array();
 	protected $view = null;
 	
 	
@@ -46,13 +45,21 @@ abstract class Controller {
 	protected function handle_post($action) {
 		// Overridden
 	}
+
+
+	protected function get_notices() {
+		$notices = $_SESSION['notices'];
+		$_SESSION['notices'] = array();
+
+		return $notices;
+	}
 	
 	
 	protected function add_notice() {
 		$args = func_get_args();
 		$message = (sizeof($args) > 1) ? call_user_func_array('sprintf', $args) : $args[0];
 		
-		$this->notices[] = array(
+		$_SESSION['notices'][] = array(
 			'message' => $message,
 			'type' => 'success'
 		);
@@ -63,7 +70,7 @@ abstract class Controller {
 		$args = func_get_args();
 		$message = (sizeof($args) > 1) ? call_user_func_array('sprintf', $args) : $args[0];
 		
-		$this->notices[] = array(
+		$_SESSION['notices'][] = array(
 			'message' => $message,
 			'type' => 'danger'
 		);
@@ -90,7 +97,7 @@ abstract class Controller {
 		if(is_null($this->view)) {
 			$this->view = new View($template);
 			$this->view->set('menu', $this->get_menu());
-			$this->view->set('notices', $this->notices);
+			$this->view->set('notices', $this->get_notices());
 			
 			$template_css_class = str_replace('/', '-', $template);
 			$this->view->add('html_class', $template_css_class);
