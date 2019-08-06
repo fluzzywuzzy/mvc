@@ -14,8 +14,10 @@ class Auth {
 	
 	static public function maybe_sign_out() {
 		if(!self::is_signed_in()) return;
+
+		$timeout = isset($_ENV['SESSION_TIMEOUT']) && is_numeric($_ENV['SESSION_TIMEOUT']) ? (int)$_ENV['SESSION_TIMEOUT'] : 3600;
 		
-		if(time() - $_SESSION['user']['last_active'] > 3600) {
+		if(time() - $_SESSION['user']['last_active'] > $timeout) {
 			self::sign_out();
 		}
 	}
