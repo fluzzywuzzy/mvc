@@ -17,6 +17,11 @@
 		}
 
 
+		static public function db() {
+			return DB::instance(Model::DB);
+		}
+
+
 		public function get_real_table() {
 			return ($this->get_base_class())::get_table();
 		}

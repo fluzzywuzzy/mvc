@@ -267,7 +267,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		if(is_null($this->rows)) {
 			$this->rows = array();
 			$this->run();
-			$class_name = trim(str_replace('Collection', '', get_class($this)), '_');
+			$class_name = $this->get_base_class();
 			
 			foreach($this->results as $data) {
 				$this->add_row($data, $class_name);
