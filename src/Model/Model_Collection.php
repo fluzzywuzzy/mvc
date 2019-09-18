@@ -38,6 +38,11 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	}
 
 
+	public function real_db() {
+		return ($this->get_base_class())::db();
+	}
+
+
 	static public function get_model_class() {
 		return trim(str_replace('Collection', '', get_called_class()), '_');
 	}
@@ -380,7 +385,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	
 	
 	protected function run() {
-		$db = self::db();
+		$db = $this->db();
 
 		if(!$this->results = $db->query($this->get_query())->fetch_all()) {
 			$this->results = array();
