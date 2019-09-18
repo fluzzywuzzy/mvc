@@ -115,7 +115,7 @@ abstract class Model implements \JsonSerializable {
 	static public function collection() {
 		$class_name = get_called_class() . '_Collection';
 		
-		return new $class_name;
+		return (class_exists($class_name) ? (new $class_name) : new General_Collection(get_called_class()));
 	}
 
 

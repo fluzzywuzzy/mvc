@@ -27,6 +27,11 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	}
 
 
+	public function get_real_table() {
+		return static::get_table();
+	}
+
+
 	static public function db() {
 		$class = static::get_model_class();
 		return $class::db();
@@ -47,7 +52,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		$fields = func_get_args();
 		
 		foreach($fields as $field) {
-			$this->select[] = static::format_key($field);
+			$this->select[] = $this->real_format_key($field);
 		}
 		
 		return $this;
@@ -69,7 +74,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		$this->join_raw(preg_replace_callback('/(\=\s*([a-z][^\s\.]*)(\z|\s))|(\s([a-z][^\s\.]*)\s*\=)/i', function($matches) {
 			$space = (!empty($matches[3]) ? $matches[3] : ' ');
 
-			return sprintf(($matches[0][0] === '=' ? '= %1$s%2$s' : '%2$s%1$s ='), static::format_key(isset($matches[5]) ? $matches[5] : $matches[2]), $space);
+			return sprintf(($matches[0][0] === '=' ? '= %1$s%2$s' : '%2$s%1$s ='), $this->real_format_key(isset($matches[5]) ? $matches[5] : $matches[2]), $space);
 		}, $join));
 		
 		return $this;
@@ -108,7 +113,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		$on = array();
 
 		foreach($condition as $joined_column => $column) {
-			$on[] = static::format_key($joined_column, $alias ?: $table) . ' = ' . static::format_key($column);
+			$on[] = $this->real_format_key($joined_column, $alias ?: $table) . ' = ' . $this->real_format_key($column);
 		}
 
 		if($alias) {
@@ -182,7 +187,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 			elseif($comparison === '!=') $comparison = 'IS NOT';
 		}
 
-		return ($format_key ? static::format_key($a) : $a) . ' ' . $comparison . ' ' . $b;
+		return ($format_key ? $this->real_format_key($a) : $a) . ' ' . $comparison . ' ' . $b;
 	}
 
 
@@ -212,7 +217,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	
 	
 	public function group_by($group_by) {
-		$this->group_by[] = static::format_key($group_by);
+		$this->group_by[] = $this->real_format_key($group_by);
 		
 		return $this;
 	}
@@ -308,10 +313,10 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		}
 
 		else {
-			$q['select'] = 'SELECT ' . self::get_table() . '.*';
+			$q['select'] = 'SELECT ' . $this->get_real_table() . '.*';
 		}
 		
-		$q['from'] = 'FROM ' . self::get_table();
+		$q['from'] = 'FROM ' . $this->get_real_table();
 		
 		if(!empty($this->join)) {
 			$q['join'] = implode("\n", $this->join);
@@ -387,6 +392,19 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		if(strpos($key, '.') === false) {
 			if(is_null($table)) {
 				$table = self::get_table();
+			}
+			
+			$key = $table . '.' . $key;
+		}
+		
+		return $key;
+	}
+
+
+	protected function real_format_key($key, $table = null) {
+		if(strpos($key, '.') === false) {
+			if(is_null($table)) {
+				$table = $this->get_real_table();
 			}
 			
 			$key = $table . '.' . $key;
