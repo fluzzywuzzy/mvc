@@ -10,6 +10,7 @@ abstract class Model implements \JsonSerializable {
 	const DB = 'app';
 	const TABLE = '';
 	const PRIMARY_KEY = 'id';
+	const IS_PRIMARY_NUMERIC = true;
 	const IS_AUTO_INCREMENT = true;
 	
 	// Hidden columns should be defined as an assoc. array: column_name => boolean
@@ -41,7 +42,7 @@ abstract class Model implements \JsonSerializable {
 
 
 	static protected function get_model_data($id) {
-		if(!is_numeric($id)) {
+		if(static::IS_PRIMARY_NUMERIC && !is_numeric($id)) {
 			throw new Problem(get_called_class() . ' ID must be numeric');
 		}
 		
@@ -132,7 +133,7 @@ abstract class Model implements \JsonSerializable {
 			throw new Problem(get_class($this) . ' ID must be set');
 		}
 		
-		if(!is_numeric($data[static::PRIMARY_KEY])) {
+		if(static::IS_PRIMARY_NUMERIC && !is_numeric($data[static::PRIMARY_KEY])) {
 			throw new Problem(get_class($this) . ' ID must be numeric');
 		}
 		
