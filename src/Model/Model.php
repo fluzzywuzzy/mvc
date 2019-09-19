@@ -160,8 +160,12 @@ abstract class Model implements \JsonSerializable {
 	}
 
 	
-	public function update($data = array()) {
+	public function update($data = array(), $value = null) {
 		$db = self::db();
+
+		if(!is_null($value) && !is_array($data)) {
+			$data = array($data => $value);
+		}
 		
 		$this->data = array_merge($this->data, $data);
 		

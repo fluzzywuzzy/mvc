@@ -56,7 +56,7 @@ class Helper {
 			$diff = array_diff(get_declared_classes(), $classes);
 			$class_name = Helper::match("/$controller/", $diff);
 			
-			if($class_name::MUST_SIGN_IN && !Auth::is_signed_in()) {
+			if($class_name::MUST_SIGN_IN && !Auth::is_signed_in() && php_sapi_name() !== 'cli') {
 				self::go_out();
 			}
 			
@@ -218,7 +218,7 @@ class Helper {
 	}
 	
 	
-	static public function get_uploaded_file($file, $valid_file_types = null) {
+	static public function get_uploaded_file($file, $valid_file_types = null, $valid_mime_types = null) {
 		if(!is_array($file) || empty($file)) {
 			throw new Problem('Invalid function argument.');
 		}
@@ -258,8 +258,12 @@ class Helper {
 			throw new Problem('Empty file name.');
 		}
 		
-		if(empty($file['type']) || $file['type'] !== mime_content_type($file['tmp_name'])) {
-			throw new Problem('Mismatching mime type.');
+		if(is_null($valid_mime_types)) {
+			$valid_mime_types = array(mime_content_type($file['tmp_name']));
+		}
+
+		if(empty($file['type']) || !in_array($file['type'], $valid_mime_types)) {
+			throw new Problem('Invalid mime type');
 		}
 		
 		if(!in_array(self::get_file_extension($file['name']), $valid_file_types)) {
