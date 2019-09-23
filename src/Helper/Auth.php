@@ -144,13 +144,18 @@ class Auth {
 	
 	static public function load_available_customers() {
 		if(!self::is_signed_in() || !isset($_SESSION['user']['caps'])) return false;
-		
-		if($customer_ids = array_filter(array_keys($_SESSION['user']['caps']))) {
-			$db = DB::instance();
-			$customers = $db->get_result('SELECT id, name FROM customers WHERE id IN (' . implode(',', $customer_ids) . ') AND status = "active" ORDER BY name');
 
-			$_SESSION['user']['available_customers'] = array();
-			
+		$db = DB::instance();
+
+		if(isset($_SESSION['user']['caps'][0]['general']['do_anything'])) {
+			$customers = $db->get_result('SELECT id, name FROM customers WHERE status = "active" ORDER BY name');
+		} elseif($customer_ids = array_filter(array_keys($_SESSION['user']['caps']))) {
+			$customers = $db->get_result('SELECT id, name FROM customers WHERE id IN (' . implode(',', $customer_ids) . ') AND status = "active" ORDER BY name');	
+		}
+
+		$_SESSION['user']['available_customers'] = array();
+		
+		if(!empty($customers)) {
 			foreach($customers as $customer) {
 				$_SESSION['user']['available_customers'][(int)$customer['id']] = $customer['name'];
 			}
