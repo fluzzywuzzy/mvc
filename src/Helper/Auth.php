@@ -148,9 +148,9 @@ class Auth {
 		$db = DB::instance();
 
 		if(isset($_SESSION['user']['caps'][0]['general']['do_anything'])) {
-			$customers = $db->get_result('SELECT id, name FROM customers WHERE status = "active" ORDER BY name');
+			$customers = $db->get_result('SELECT id, name FROM customers WHERE status = ? ORDER BY name', 'active');
 		} elseif($customer_ids = array_filter(array_keys($_SESSION['user']['caps']))) {
-			$customers = $db->get_result('SELECT id, name FROM customers WHERE id IN (' . implode(',', $customer_ids) . ') AND status = "active" ORDER BY name');	
+			$customers = $db->get_result('SELECT id, name FROM customers WHERE id IN (' . implode(',', $customer_ids) . ') AND status = ? ORDER BY name', 'acti');
 		}
 
 		$_SESSION['user']['available_customers'] = array();
