@@ -162,18 +162,18 @@ abstract class Model implements \JsonSerializable {
 	
 	public function update($data = array()) {
 		$db = self::db();
-
-		// Shorthand
-		if(func_num_args() === 2) {
-			$args = func_get_args();
-			$data = array($args[0] => $args[1]);
-		}
 		
 		$this->data = array_merge($this->data, $data);
 		
 		return $db->update(static::get_table(), $data, array(
 			static::PRIMARY_KEY => $this->data[static::PRIMARY_KEY]
 		));
+	}
+
+
+	// Shorthand
+	public function put($key, $value) {
+		return $this->update([$key => $value]);
 	}
 	
 	
