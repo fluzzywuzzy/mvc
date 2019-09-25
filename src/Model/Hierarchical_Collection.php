@@ -8,7 +8,13 @@
 		}
 
 
-		// <- Todo: Add get_flat_tree() method (one-dimensional array with depth attribute).
+		public function get_flat_tree($parent_id = 0) {
+			$flat_tree = array();
+
+			$this->flatten_tree($this->build_tree($parent_id, 'children'), $flat_tree);
+
+			return $flat_tree;
+		}
 
 
 		protected function build_tree($parent_id, $children_key) {
@@ -25,5 +31,20 @@
 			}
 
 			return $branch;
+		}
+
+
+		protected function flatten_tree($tree, &$flat_tree, $depth = 0) {
+			foreach($tree as $model) {
+				$model->set('depth', $depth);
+
+				$flat_tree[] = $model;
+				
+				if($model->has_children()) {
+					$children = $model->get_children();
+					$model->unset('children');
+					$this->flatten_tree($children, $flat_tree, $depth + 1);
+				}
+			}
 		}
 	}
