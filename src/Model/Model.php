@@ -166,7 +166,7 @@ abstract class Model implements \JsonSerializable {
 		// Shorthand
 		if(func_num_args() === 2) {
 			$args = func_get_args();
-			$data = array($args[0] => $args[0]);
+			$data = array($args[0] => $args[1]);
 		}
 		
 		$this->data = array_merge($this->data, $data);
