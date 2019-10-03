@@ -64,7 +64,8 @@ class Router {
 				try {
 					call_user_func($controller, (empty($this->keys) ? array() : array_combine($this->keys, array_slice($matches, 1))));
 				} catch(Problem $e) {
-					echo '<p class="error">' . $e->getMessage() . '</p>';
+					ob_end_clean();
+					throw $e;
 				}
 				
 				echo ob_get_clean();

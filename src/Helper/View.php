@@ -108,7 +108,7 @@ class View {
 	}
 
 
-	static public function error($code) {
+	static public function error($code, $message = '') {
 		$path = self::path($code, true);
 		
 		if(!file_exists($path)) {
