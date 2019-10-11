@@ -48,7 +48,7 @@ abstract class Controller {
 
 
 	protected function get_notices() {
-		$notices = $_SESSION['notices'];
+		$notices = isset($_SESSION['notices']) ? $_SESSION['notices'] : array();
 		$_SESSION['notices'] = array();
 
 		return $notices;
