@@ -108,7 +108,7 @@ abstract class Model implements \JsonSerializable {
 	
 	
 	static public function get_class_name() {
-		return substr(get_called_class(), strlen(__NAMESPACE__) + 1);
+		return (new \ReflectionClass(get_called_class()))->getShortName();
 	}
 	
 	
