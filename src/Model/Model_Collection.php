@@ -90,6 +90,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	 * Usage:
 	 * 
 	 * left_join('my_table', 'my_optional_alias', ['my_column' => 'someone_elses_column'])
+	 * left_join('my_table', 'my_optional_alias', ['my_column' => ['a string', 'or more']])
 	 */
 	public function left_join() {
 		$args = func_get_args();
@@ -118,7 +119,16 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		$on = array();
 
 		foreach($condition as $joined_column => $column) {
-			$on[] = $this->real_format_key($joined_column, $alias ?: $table) . ' = ' . $this->real_format_key($column);
+			if(is_array($column)) {
+				if(count($column) === 1) {
+					$column = reset($column);
+				}
+				
+				$on[] = $this->real_format_key($joined_column, $alias ?: $table) . ' ' . (is_array($column) ? 'IN' : '=') . ' ' . static::format_value($column);
+			}
+			else {
+				$on[] = $this->real_format_key($joined_column, $alias ?: $table) . ' = ' . $this->real_format_key($column);
+			}
 		}
 
 		if($alias) {
