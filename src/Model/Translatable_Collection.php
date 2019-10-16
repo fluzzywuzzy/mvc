@@ -30,6 +30,19 @@
 		}
 
 
+		protected function get_query_parts() {
+			if(empty($this->select)) {
+				$this->select('*');
+
+				foreach(array_keys($this->get_translated_columns()) as $column) {
+					$this->with_translated($column);
+				}
+			}
+
+			return parent::get_query_parts();
+		}
+
+
 		protected function get_translated_columns() {
 			return $this->get_base_class()::get_translated_columns();
 		}

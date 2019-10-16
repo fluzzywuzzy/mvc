@@ -55,14 +55,14 @@
 
 			// If the requested data is translatable
 			if(isset($translated_columns[$key]) && isset($this->data[$translated_columns[$key]])) {
-				$lang = (isset($args[0]) ? $args[0] : static::DEFAULT_LANG);
+				$lang = (isset($args[0]) ? $args[0] : null);
 
 				// If the requested data already exists in the correct language
-				if(isset($this->data[$key]) && $lang === $this->lang) {
+				if(isset($this->data[$key]) && (!$lang || $lang === $this->lang)) {
 					$value = $this->data[$key];
 				}
 				else {
-					$value = static::get_translated_string($this->data[$translated_columns[$key]], $lang);
+					$value = static::get_translated_string($this->data[$translated_columns[$key]], $lang ?: static::DEFAULT_LANG);
 				}
 
 				return ($type === 'get' ? $value : !empty($value));
@@ -121,7 +121,7 @@
 		}
 
 
-		static protected function get_translated_columns() {
+		static public function get_translated_columns() {
 			static $cache;
 
 			if(is_null($cache)) {
@@ -136,8 +136,8 @@
 				$compare_pos = -strlen(static::COLUMN_SUFFIX);
 
 				foreach($columns as $column) {
-					if(substr_compare($column, $needle, $compare_pos) === 0) {
-						$cache[$table][substr($column, $compare_pos)] = $column;
+					if(substr_compare($column, static::COLUMN_SUFFIX, $compare_pos) === 0) {
+						$cache[$table][substr($column, 0, $compare_pos)] = $column;
 					}
 				}
 			}
