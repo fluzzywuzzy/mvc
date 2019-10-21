@@ -13,18 +13,18 @@ class Auth {
 	
 	
 	static public function maybe_sign_out() {
-		if(!self::is_signed_in()) return;
+		if(!static::is_signed_in()) return;
 
 		$timeout = isset($_ENV['SESSION_TIMEOUT']) && is_numeric($_ENV['SESSION_TIMEOUT']) ? (int)$_ENV['SESSION_TIMEOUT'] : 3600;
 		
 		if(time() - $_SESSION['user']['last_active'] > $timeout) {
-			self::sign_out();
+			static::sign_out();
 		}
 	}
 	
 	
 	static public function sign_out() {
-		if(!self::is_signed_in()) return;
+		if(!static::is_signed_in()) return;
 		
 		unset($_SESSION['user']);
 
@@ -45,7 +45,7 @@ class Auth {
 	
 	
 	static public function sign_in($user) {
-		if(self::is_signed_in()) return;
+		if(static::is_signed_in()) return;
 		
 		if(!$user instanceof Authable) {
 			throw new Problem('Sign in object must implement interface Authable.');
@@ -65,35 +65,35 @@ class Auth {
 			static::load_capabilities();
 			static::load_available_customers();
 		} catch(Exception $e) {
-			self::sign_out();
+			static::sign_out();
 			throw new Problem('Unable to load capabilities');
 		}
 	}
 	
 	
 	static public function register_activity() {
-		if(!self::is_signed_in()) return;
+		if(!static::is_signed_in()) return;
 		
 		$_SESSION['user']['last_active'] = time();
 	}
 	
 	
 	static public function get_id() {
-		if(!self::is_signed_in()) return false;
+		if(!static::is_signed_in()) return false;
 		
 		return (int)$_SESSION['user']['id'];
 	}
 	
 	
 	static public function get_name() {
-		if(!self::is_signed_in()) return false;
+		if(!static::is_signed_in()) return false;
 		
 		return $_SESSION['user']['name'];
 	}
 	
 
 	static public function get_lang() {
-		if(!self::is_signed_in()) return false;
+		if(!static::is_signed_in()) return false;
 
 		return $_SESSION['user']['lang'];
 	}
@@ -107,15 +107,15 @@ class Auth {
 	static public function get_user() {
 		Helper::deprecated();
 
-		return self::get_id();
+		return static::get_id();
 	}
 	
 	
 	static public function load_capabilities() {
-		if(!self::is_signed_in()) return false;
+		if(!static::is_signed_in()) return false;
 		
 		$db = DB::instance();
-		$capabilities = $db->get_result('SELECT customer_id, capability FROM user_capabilities WHERE user_id = ?', self::get_id());
+		$capabilities = $db->get_result('SELECT customer_id, capability FROM user_capabilities WHERE user_id = ?', static::get_id());
 		
 		$_SESSION['user']['caps'] = array();
 		
@@ -143,7 +143,7 @@ class Auth {
 	
 	
 	static public function load_available_customers() {
-		if(!self::is_signed_in() || !isset($_SESSION['user']['caps'])) return false;
+		if(!static::is_signed_in() || !isset($_SESSION['user']['caps'])) return false;
 
 		$db = DB::instance();
 
@@ -163,23 +163,23 @@ class Auth {
 		
 		// Set current customer ID to the first one, if there is none set
 		if(defined('ENDPOINT') && ENDPOINT === 'admin') {
-			self::set_customer_id(0);
-		} elseif(!empty($customers) && !self::get_customer_id()) {
-			self::set_customer_id($customers[0]->get_id());
+			static::set_customer_id(0);
+		} elseif(!empty($customers) && !static::get_customer_id()) {
+			static::set_customer_id($customers[0]->get_id());
 		}
 	}
 	
 	
 	// Returns array with: id => name
 	static public function get_available_customers() {
-		if(!self::is_signed_in() || !isset($_SESSION['user']['available_customers'])) return array();
+		if(!static::is_signed_in() || !isset($_SESSION['user']['available_customers'])) return array();
 		
 		return $_SESSION['user']['available_customers'];
 	}
 	
 	
 	static public function get_customer_id() {
-		if(!self::is_signed_in()) return null;
+		if(!static::is_signed_in()) return null;
 		if(!isset($_SESSION['user']['customer_id'])) return null;
 		
 		return (int)$_SESSION['user']['customer_id'];
@@ -188,7 +188,7 @@ class Auth {
 
 	static public function get_customer_name() {
 		if(!isset($_SESSION['user']['customer_name'])) {
-			if(!($customer_id = self::get_customer_id())) return null;
+			if(!($customer_id = static::get_customer_id())) return null;
 
 			$customer = Customer::get_by_id($customer_id);
 			$_SESSION['user']['customer_name'] = $customer->get_name();
@@ -199,7 +199,7 @@ class Auth {
 	
 	
 	static public function set_customer_id($customer_id) {
-		if(!self::is_signed_in()) return false;
+		if(!static::is_signed_in()) return false;
 		
 		$customer_id = (int)$customer_id;
 		
@@ -213,11 +213,11 @@ class Auth {
 	
 	
 	static public function can($capability, $capability_group = 'general', $customer_id = null) {
-		if(!self::is_signed_in()) return false;
+		if(!static::is_signed_in()) return false;
 		
 		// If null, get customer ID from current session
 		if(is_null($customer_id)) {
-			$customer_id = self::get_customer_id();
+			$customer_id = static::get_customer_id();
 		}
 		
 		// If still unset or invalid
@@ -243,11 +243,11 @@ class Auth {
 	
 	
 	static public function has_capability_group($capability_group, $customer_id = null) {
-		if(!self::is_signed_in()) return false;
+		if(!static::is_signed_in()) return false;
 		
 		// If null, get customer ID from current session
 		if(is_null($customer_id)) {
-			$customer_id = self::get_customer_id();
+			$customer_id = static::get_customer_id();
 		}
 		
 		// If still unset or invalid
