@@ -65,6 +65,7 @@ class View {
 
 
 	public function output($wrap = true) {
+		Lang::setup();
 		array_unshift($this->_data['breadcrumb'], array(
 			'url' => '/',
 			'label' => Lang::get_string('Home')
