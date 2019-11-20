@@ -188,10 +188,10 @@
 			if(!$stmt) {
 				$stmt = static::db()->prepare(sprintf(
 					'SELECT %1$s FROM %2$s ORDER BY %1$s DESC LIMIT 1',
-					static::TRANSLATIONS_TABLE_TEXT, static::TRANSLATIONS_TABLE
+					static::TRANSLATIONS_TABLE_ID, static::TRANSLATIONS_TABLE
 				));
 			}
 
-			return (int)($stmt->execute->fetch_value() ?: 0) + 1;
+			return (int)($stmt->execute()->fetch_value() ?: 0) + 1;
 		}
 	}
