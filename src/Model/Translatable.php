@@ -94,7 +94,7 @@
 				}
 
 				if(!$this->data[$translated_columns[$key]]) {
-					$this->data[$translated_columns[$key]] = static::next_translation_id();
+					$this->put($translated_columns[$key], static::next_translation_id());
 				}
 
 				$update->execute(array(
