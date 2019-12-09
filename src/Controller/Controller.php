@@ -66,6 +66,17 @@ abstract class Controller {
 	}
 	
 	
+	protected function add_warning() {
+		$args = func_get_args();
+		$message = (sizeof($args) > 1) ? call_user_func_array('sprintf', $args) : $args[0];
+		
+		$_SESSION['notices'][] = array(
+			'message' => $message,
+			'type' => 'warning'
+		);
+	}
+	
+	
 	protected function add_error() {
 		$args = func_get_args();
 		$message = (sizeof($args) > 1) ? call_user_func_array('sprintf', $args) : $args[0];
@@ -82,6 +93,14 @@ abstract class Controller {
 		$message = (sizeof($args) > 1) ? call_user_func_array('__', $args) : __($args[0]);
 		
 		$this->add_notice($message);
+	}
+
+
+	protected function translated_warning() {
+		$args = func_get_args();
+		$message = (sizeof($args) > 1) ? call_user_func_array('__', $args) : __($args[0]);
+		
+		$this->add_warning($message);
 	}
 	
 	
