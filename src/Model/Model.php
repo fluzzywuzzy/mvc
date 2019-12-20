@@ -103,7 +103,13 @@ abstract class Model implements \JsonSerializable {
 
 
 	static protected function alter_data($data, $id = null, $current_data = null) {
-		return $data;
+		return array_map(function($value) {
+			if($value instanceof \DateTime) {
+				return $value->format('Y-m-d H:i:s');
+			}
+			
+			return $value;
+		}, $data);
 	}
 	
 	
