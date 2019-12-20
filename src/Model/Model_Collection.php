@@ -301,7 +301,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 
 
 	public function get_single() {
-		$this->get();
+		$this->limit(1)->get();
 
 		return reset($this->rows);
 	}
