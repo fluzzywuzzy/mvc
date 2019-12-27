@@ -104,7 +104,7 @@ abstract class Model implements \JsonSerializable {
 			throw new Problem(get_called_class() . ' could not be created.');
 		}
 
-		if(is_object($result) && $id = $result->fetch_value()) $data[static::PRIMARY_KEY] = $id;
+		if($id = $db->get_last_id()) $data[static::PRIMARY_KEY] = $id;
 		
 		return new static($data);
 	}
