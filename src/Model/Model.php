@@ -79,7 +79,7 @@ abstract class Model implements \JsonSerializable {
 	}
 
 
-	static public function create_update($data, $unique_keys = array(), $dont_update_keys = array()) {
+	static public function upsert($data, $unique_keys = null, $dont_update_keys = null) {
 		if(!is_array($data)) {
 			throw new Problem('Input must be an array');
 		}
@@ -88,17 +88,31 @@ abstract class Model implements \JsonSerializable {
 			throw new Problem(get_called_class() . ' ID must not be set');
 		}
 
+		if(is_null($unique_keys)) {
+			$unique_keys = (isset($data[static::PRIMARY_KEY]) ? [static::PRIMARY_KEY] : []);
+		}
+
+		if(is_null($dont_update_keys)) {
+			$dont_update_keys = $unique_keys;
+		}
+
 		$db = self::db();
 		$data = static::alter_data($data);
-		$result = $db->insert_update(self::get_table(), $data, $unique_keys, $dont_update_keys, static::PRIMARY_KEY);
+		$result = $db->upsert(self::get_table(), $data, $unique_keys, $dont_update_keys, static::PRIMARY_KEY);
 		
 		if(!$result) {
 			throw new Problem(get_called_class() . ' could not be created.');
 		}
 
-		if($id = $result->fetch_value()) $data[static::PRIMARY_KEY] = $id;
+		if(is_object($result) && $id = $result->fetch_value()) $data[static::PRIMARY_KEY] = $id;
 		
 		return new static($data);
+	}
+
+
+	// DEPRECATED
+	static public function create_update($data, $unique_keys = array(), $dont_update_keys = array()) {
+		return static::upsert($data, $unique_keys, $dont_update_keys);
 	}
 
 
