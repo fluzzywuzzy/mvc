@@ -478,4 +478,11 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		// instead of $this->get().
 		return count($this->rows);
 	}
+
+
+	public function get_prop($prop) {
+		if(isset($this->{$prop})) {
+			return $this->{$prop};
+		}
+	}
 }
