@@ -384,6 +384,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		$this->order_by = array();
 		$this->group_by = array();
 		$this->rows = array();
+		$this->having = array();
 		$this->limit = 0;
 		$this->offset = 0;
 
