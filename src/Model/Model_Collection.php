@@ -252,6 +252,17 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	}
 	
 	
+	public function order_by_custom($column, $values = array()) {
+		$values = self::format_value($values, true);
+
+		array_unshift($values, self::format_key($column));
+
+		$this->order_by[] = 'FIELD(' . implode(', ', $values) . ')';
+
+		return $this;
+	}
+	
+	
 	public function limit($limit) {
 		$this->limit = $limit;
 		
