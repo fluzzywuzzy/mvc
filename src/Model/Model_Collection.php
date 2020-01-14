@@ -250,8 +250,8 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		
 		return $this;
 	}
-	
-	
+
+
 	public function order_by_custom($column, $values = array()) {
 		$values = self::format_value($values, true);
 
@@ -441,7 +441,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	}
 
 
-	static protected function format_value($value) {
+	static protected function format_value($value, $keep_arrays = false) {
 		if($value instanceof \DateTime) {
 			$value = $value->format('Y-m-d H:i:s');
 		}
@@ -450,17 +450,15 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 			$value = null;
 		}
 		elseif(is_string($value)) {
-			return "'" . $value . "'";
+			return self::db()->escape_string($value, true);
 		}
 		elseif(is_bool($value)) {
 			return (int)$value;
 		}
 		elseif(is_array($value)) {
-			$value = array_map(function($e) {
-				return "'" . $e . "'";
-			}, $value);
+			$value = array_map([__CLASS__, 'format_value'], $value);
 
-			return '(' . implode(', ', $value) . ')';
+			return ($keep_arrays ? $value : ('(' . implode(', ', $value) . ')'));
 		}
 
 		if(is_null($value)) {
