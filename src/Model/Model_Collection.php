@@ -411,6 +411,11 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 
 		return isset($this->results[0]['count']) ? $this->results[0]['count'] : false;
 	}
+
+
+	public function get_column() {
+		return $this->db()->get_column($this->get_query());
+	}
 	
 	
 	protected function run() {
