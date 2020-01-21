@@ -73,6 +73,13 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		
 		return $this;
 	}
+
+
+	public function reset_select() {
+		$this->select = array();
+
+		return $this;
+	}
 	
 	
 	public function join($join) {
