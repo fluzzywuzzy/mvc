@@ -20,6 +20,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	protected $results = array();
 	protected $rows = null;
 	protected $rows_key = null;
+	protected $taken_table_names = array();
 
 	
 	static public function get_table() {
@@ -119,6 +120,13 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 			throw new Problem('Invalid number of arguments.');
 		}
 
+		if($alias) {
+			if(isset($this->taken_table_names[$alias])) return $this;
+		}
+		else {
+			if(isset($this->taken_table_names[$table])) return $this;
+		}
+
 		if(!is_array($condition) || empty($condition)) {
 			throw new Problem('Condition must be an array.');
 		}
@@ -140,6 +148,10 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 
 		if($alias) {
 			$table .= ' AS ' . $alias;
+			$this->taken_table_names[$alias] = 1;
+		}
+		else {
+			$this->taken_table_names[$table] = 1;
 		}
 
 		$this->join_raw('LEFT JOIN ' . $table . ' ON ' . implode(' AND ', $on));
