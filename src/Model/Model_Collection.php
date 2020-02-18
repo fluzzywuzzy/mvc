@@ -408,7 +408,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 	}
 
 
-	public function get_count() {
+	public function get_count($column = '*') {
 		// Reset everything but joins and conditions
 		$this->select = array();
 		$this->order_by = array();
@@ -418,7 +418,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 		$this->limit = 0;
 		$this->offset = 0;
 
-		$this->select_raw('COUNT(*) AS count');
+		$this->select_raw('COUNT(' . $column . ') AS count');
 		$this->run();
 
 		return isset($this->results[0]['count']) ? $this->results[0]['count'] : false;
