@@ -25,7 +25,7 @@ class Uuid {
 	
 
 	public static function equals($uuid1, $uuid2) {
-        return self::getBytes($uuid1) === self::getBytes($uuid2);
+        return self::get_bytes($uuid1) === self::get_bytes($uuid2);
     }
 	
 
@@ -33,5 +33,31 @@ class Uuid {
         $bytes = function_exists('random_bytes') ? random_bytes(16) : openssl_random_pseudo_bytes(16);
         $hash = bin2hex($bytes);
         return self::uuid_from_hash($hash, 4);
+	}
+	
+
+	private static function get_bytes($uuid) {
+        if (!self::is_valid($uuid)) {
+            throw new Problem('Invalid UUID string: ' . $uuid);
+		}
+		
+        // Get hexadecimal components of UUID
+        $uhex = str_replace(array(
+            'urn:',
+            'uuid:',
+            '-',
+            '{',
+            '}'
+        ), '', $uuid);
+
+        // Binary Value
+        $ustr = '';
+
+        // Convert UUID to bits
+        for($i = 0; $i < strlen($uhex); $i += 2) {
+            $ustr .= chr(hexdec($uhex[$i] . $uhex[$i + 1]));
+		}
+		
+        return $ustr;
     }
 }
