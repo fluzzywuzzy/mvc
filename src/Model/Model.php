@@ -235,9 +235,4 @@ abstract class Model implements \JsonSerializable {
 		
 		return Audit_Log::add($note, static::get_class_name(), $this->data[static::PRIMARY_KEY]);
 	}
-
-
-	public function set($key, $value) {
-		$this->data[$key] = $value;
-	}
 }
