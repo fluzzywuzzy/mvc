@@ -133,17 +133,18 @@ abstract class Model implements \JsonSerializable {
 	
 	
 	static public function collection() {
-		$class_name = get_called_class() . '_Collection';
+		$class_name = get_called_class();
+		$collection_class_name = $class_name . '_Collection';
 		
-		if(class_exists($class_name)) {
-			return new $class_name;
+		if(class_exists($collection_class_name)) {
+			return new $collection_class_name;
 		}
 
 		foreach(class_parents(get_called_class()) as $parent_class) {
-			$class_name = $parent_class . '_Collection';
+			$collection_class_name = $parent_class . '_Collection';
 
-			if(class_exists($class_name)) {
-				return new $class_name;
+			if(class_exists($collection_class_name)) {
+				return new $collection_class_name;
 			}
 		}
 
