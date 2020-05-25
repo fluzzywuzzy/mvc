@@ -139,6 +139,14 @@ abstract class Model implements \JsonSerializable {
 			return new $class_name;
 		}
 
+		foreach(class_parents(get_called_class()) as $parent_class) {
+			$class_name = $parent_class . '_Collection';
+
+			if(class_exists($class_name)) {
+				return new $class_name;
+			}
+		}
+
 		return ($class_name instanceof Translatable ? new General_Translatable_Collection(get_called_class()) : new General_Collection(get_called_class()));
 	}
 
