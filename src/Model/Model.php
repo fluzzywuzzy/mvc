@@ -142,10 +142,10 @@ abstract class Model implements \JsonSerializable {
 
 		foreach(class_parents(get_called_class()) as $parent_class) {
 			if($parent_class === __CLASS__) continue;
-			
+
 			$collection_class_name = $parent_class . '_Collection';
 
-			if(class_exists($collection_class_name)) {
+			if(class_exists($collection_class_name) && (new \ReflectionClass($collection_class_name))->isInstantiable()) {
 				return new $collection_class_name;
 			}
 		}
