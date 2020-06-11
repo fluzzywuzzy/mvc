@@ -474,7 +474,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 			$value = null;
 		}
 		elseif(is_string($value)) {
-			return self::db()->escape_string($value, true);
+			return static::db()->escape_string($value, true);
 		}
 		elseif(is_bool($value)) {
 			return (int)$value;
