@@ -6,7 +6,7 @@ use Webbmaffian\ORM\DB;
 class Sanitize {
 
 	static public function mime_type($mime_type) {
-		if(preg_match('/^([a-z0-9-\/]+)/', strtolower(str_replace(' ', '', $mime_type)), $matches)) {
+		if(preg_match('/^([a-z0-9-\/\.\*]+)/', strtolower(str_replace(' ', '', $mime_type)), $matches)) {
 			return $matches[1];
 		}
 		
