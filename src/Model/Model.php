@@ -98,7 +98,7 @@ abstract class Model implements \JsonSerializable {
 
 		$db = self::db();
 		$data = static::alter_data($data);
-		$result = $db->upsert(self::get_table(), $data, $unique_keys, $dont_update_keys, static::PRIMARY_KEY);
+		$result = $db->upsert(self::get_table(), $data, $unique_keys, $dont_update_keys, static::IS_AUTO_INCREMENT ? static::PRIMARY_KEY : null);
 		
 		if(!$result) {
 			throw new Problem(get_called_class() . ' could not be created.');
