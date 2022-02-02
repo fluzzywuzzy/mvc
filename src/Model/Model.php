@@ -6,7 +6,7 @@ use Webbmaffian\MVC\Helper\Problem;
 use Webbmaffian\ORM\DB;
 use Webbmaffian\MVC\Helper\Audit_Log;
 
-abstract class Model implements \JsonSerializable {
+abstract class Model implements Model_Interface {
 	const DB = 'app';
 	const TABLE = '';
 	const PRIMARY_KEY = 'id';
@@ -132,7 +132,7 @@ abstract class Model implements \JsonSerializable {
 	}
 	
 	
-	static public function collection() {
+	static public function collection(): Collection_Interface {
 		$class_name = get_called_class();
 		$collection_class_name = $class_name . '_Collection';
 		

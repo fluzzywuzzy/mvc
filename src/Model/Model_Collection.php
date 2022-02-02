@@ -3,9 +3,8 @@
 namespace Webbmaffian\MVC\Model;
 
 use \Webbmaffian\MVC\Helper\Problem;
-use \Webbmaffian\ORM\DB;
 
-abstract class Model_Collection implements \JsonSerializable, \Countable {
+abstract class Model_Collection implements Collection_Interface {
 	const TABLE = '';
 	
 	protected $select = array();
@@ -505,7 +504,7 @@ abstract class Model_Collection implements \JsonSerializable, \Countable {
 
 
 	// Interface for count()
-	public function count() {
+	public function count(): int {
 
 		// We don't want to run any query here, so we use $this->rows directly
 		// instead of $this->get().
