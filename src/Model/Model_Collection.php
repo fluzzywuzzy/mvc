@@ -498,7 +498,7 @@ abstract class Model_Collection implements Collection_Interface {
 
 
 	// Interface for json_encode()
-	public function jsonSerialize() {
+	public function jsonSerialize(): mixed {
 		return $this->get();
 	}
 

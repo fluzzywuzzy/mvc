@@ -24,7 +24,7 @@ abstract class Model implements Model_Interface {
 	}
 
 
-	static public function get_column_names() {
+	static public function get_column_names() {	
 		return static::db()->get_column_names(static::get_table());
 	}
 
@@ -226,7 +226,7 @@ abstract class Model implements Model_Interface {
 	}
 	
 	
-	public function jsonSerialize() {
+	public function jsonSerialize(): mixed {
 		return $this->get_data();
 	}
 
