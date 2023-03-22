@@ -15,6 +15,7 @@ abstract class Model_Collection implements Collection_Interface {
 	protected $group_by = array();
 	protected $limit = 0;
 	protected $offset = 0;
+	protected $order_by = array();
 	
 	protected $results = array();
 	protected $rows = null;
