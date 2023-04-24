@@ -32,7 +32,6 @@
 		"webbmaffian/orm": "^1.1.0",
 		"josegonzalez/dotenv": "*",
 		"firebase/php-jwt": "^6.0",
-		"malios/php-to-ascii-table": "^3.0.0",
-		"phan/phan": "^5.4"
+		"malios/php-to-ascii-table": "^3.0.0"
 	}
 }
