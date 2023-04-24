@@ -13,6 +13,15 @@ class Helper {
 	}
 
 
+	static public function constant(string $name): string {
+		if(defined($name)) {
+			return (string)constant($name);
+		}
+
+		return '';
+	}
+
+
 	static public function is_assoc($arr) {
 		if(empty($arr)) return false;
 		
@@ -45,7 +54,7 @@ class Helper {
 		}
 		
 		if(!isset(self::$controllers[$controller])) {
-			$file_path = Helper::root_dir() . '/app/controllers/' . ENDPOINT . '/' . strtolower(str_replace('_', '-', $controller)) . '.php';
+			$file_path = Helper::root_dir() . '/app/controllers/' . self::constant('ENDPOINT') . '/' . strtolower(str_replace('_', '-', $controller)) . '.php';
 
 			if(!file_exists($file_path)) {
 				throw new Problem('File path does not exist: ' . $file_path);
@@ -55,6 +64,8 @@ class Helper {
 			include($file_path);
 			$diff = array_diff(get_declared_classes(), $classes);
 			$class_name = Helper::match("/$controller/", $diff);
+
+			if(empty($class_name)) throw new Problem('Invalid class name.');
 			
 			if($class_name::MUST_SIGN_IN && !Auth::is_signed_in() && php_sapi_name() !== 'cli') {
 				self::go_out();
@@ -76,7 +87,7 @@ class Helper {
 		$referer = parse_url($_SERVER['HTTP_REFERER']);
 		$home = parse_url(self::get_url());
 
-		if($referer['host'] !== $home['host']) {
+		if(isset($referer['host'], $home['host']) && $referer['host'] !== $home['host']) {
 			$url = self::get_url();
 		} else {
 			$url = $_SERVER['HTTP_REFERER'];
@@ -102,14 +113,15 @@ class Helper {
 		
 		$args = http_build_query($args);
 		$base = (!empty($parts['scheme']) ? $parts['scheme'] . '://' : '') . (!empty($parts['host']) ? $parts['host'] . (!empty($parts['port']) ? ':' . $parts['port'] : '') : '');
-		return $base . $parts['path'] . '?' . $args;
+
+		return $base . ($parts['path'] ?? '') . '?' . $args;
 	}
 
 
 	static public function get_url($path = '', $protocol = '') {
-		if(!defined('ENDPOINT')) return '';
+		if(empty(self::constant('ENDPOINT'))) return '';
 		
-		$endpoint = strtoupper(ENDPOINT);
+		$endpoint = strtoupper(self::constant('ENDPOINT'));
 
 		if(!isset($_ENV[$endpoint . '_ENDPOINT'])) return '';
 
@@ -164,8 +176,11 @@ class Helper {
 		}
 		
 		$caller = $trace[1];
+		$fn_name = $caller['class'] . $caller['type'] . $caller['function'];
+		$file = substr($caller['file'], defined('ABSPATH') ? strlen(self::constant('ABSPATH')) - 1 : 0);
+		$line = $caller['line'];
 		
-		error_log('Deprecated function ' . $caller['class'] . $caller['type'] . $caller['function'] . ' used at ' . substr($caller['file'], strlen(ABSPATH) - 1) . ':' . $caller['line']);
+		error_log(sprintf('Deprecated function %s used at %s:%s', $fn_name, $file, $line));
 	}
 	
 

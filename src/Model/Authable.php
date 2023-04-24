@@ -16,4 +16,10 @@ interface Authable {
 	public function remove_capability($capability, $tenant_id);
 
 	public function get_capabilities();
+
+	public function get_id();
+
+	public function get_name();
+
+	public function get_language();
 }

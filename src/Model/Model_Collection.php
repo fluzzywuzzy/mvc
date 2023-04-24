@@ -372,7 +372,7 @@ abstract class Model_Collection implements Collection_Interface {
 		}
 
 		if(!empty($this->where_raw)) {
-			if(empty($this->where)) {
+			if(empty($q['where'])) {
 				$q['where'] = 'WHERE ' . implode(' AND ', $this->where_raw);
 			} else {
 				$q['where'] .= ' AND (' . implode(') AND (', $this->where_raw) . ')';
@@ -517,5 +517,7 @@ abstract class Model_Collection implements Collection_Interface {
 		if(isset($this->{$prop})) {
 			return $this->{$prop};
 		}
+
+		return null;
 	}
 }

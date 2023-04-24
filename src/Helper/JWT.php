@@ -31,7 +31,8 @@ class JWT {
 			throw new Problem('Missing environment variable: JWT_SECRET');
 		}
 		
-		$data = \Firebase\JWT\JWT::decode($token, $_ENV['JWT_SECRET'], array(self::ALGORITHM));
+		$key = new \Firebase\JWT\Key($_ENV['JWT_SECRET'], self::ALGORITHM);
+		$data = \Firebase\JWT\JWT::decode($token, $key);
 		
 		return (array)$data->data;
 	}

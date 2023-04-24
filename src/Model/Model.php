@@ -177,16 +177,19 @@ abstract class Model implements Model_Interface {
 	
 	
 	public function __call($name, $args = array()) {
-		if(strpos($name, '_') === false) return;
+		if(strpos($name, '_') === false) return null;
 		
 		list($type, $name) = explode('_', $name, 2);
 		
 		if($type === 'get') {
 			return $this->data[$name];
 		}
-		elseif($type === 'has') {
+
+		if($type === 'has') {
 			return !empty($this->data[$name]);
 		}
+
+		return null;
 	}
 
 

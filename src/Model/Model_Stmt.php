@@ -1,7 +1,6 @@
 <?php
 	namespace Webbmaffian\MVC\Model;
 	use Webbmaffian\MVC\Helper\Problem;
-	use Webbmaffian\ORM\DB;
 
 	class Model_Stmt {
 		protected $model_class;

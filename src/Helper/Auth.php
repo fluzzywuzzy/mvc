@@ -139,6 +139,8 @@ class Auth {
 			
 			$_SESSION['user']['caps'][$customer_id][$capability_group][$capability] = 1;
 		}
+
+		return true;
 	}
 	
 	
@@ -162,11 +164,13 @@ class Auth {
 		}
 		
 		// Set current customer ID to the first one, if there is none set
-		if(defined('ENDPOINT') && ENDPOINT === 'admin') {
+		if(Helper::constant('ENDPOINT') === 'admin') {
 			static::set_customer_id(0);
 		} elseif(!empty($customers) && !static::get_customer_id()) {
 			static::set_customer_id($customers[0]->get_id());
 		}
+
+		return true;
 	}
 	
 	
@@ -187,14 +191,9 @@ class Auth {
 
 
 	static public function get_customer_name() {
-		if(!isset($_SESSION['user']['customer_name'])) {
-			if(!($customer_id = static::get_customer_id())) return null;
+		trigger_error('Method get_customer_name is deprecated as of v1.8.0 and returns nothing.', E_USER_DEPRECATED);
 
-			$customer = Customer::get_by_id($customer_id);
-			$_SESSION['user']['customer_name'] = $customer->get_name();
-		}
-
-		return $_SESSION['user']['customer_name'];
+		return null;
 	}
 	
 	
@@ -209,6 +208,8 @@ class Auth {
 		
 		$_SESSION['user']['customer_name'] = null;
 		$_SESSION['user']['customer_id'] = $customer_id;
+
+		return true;
 	}
 	
 	

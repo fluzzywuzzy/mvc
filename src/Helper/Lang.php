@@ -27,9 +27,9 @@ class Lang {
 			mkdir(Helper::root_dir() . '/data/lang-cache', 0775, true);
 		}
 
-		if(defined('LANG')) {
-			self::$lang = LANG;
-		} elseif(Auth::get_lang()) {
+		self::$lang = Helper::constant('LANG');
+		
+		if(empty(self::$lang) && Auth::get_lang()) {
 			self::$lang = Auth::get_lang();
 		} else {
 			self::$lang = self::DEFAULT_LANG;
@@ -55,8 +55,10 @@ class Lang {
 		}
 		
 		$lang_slug = 'lang_' . self::$lang;
-		
-		if(!self::$use_cache || false === (self::$strings = self::cache_get($lang_slug, filemtime(self::$translations_file)))) {
+
+		if(self::$use_cache) {
+			self::$strings = self::cache_get($lang_slug, filemtime(self::$translations_file)) ?: [];
+		} else {
 			self::$strings = array();
 			
 			$rows = self::parse_csv(file_get_contents(self::$translations_file));
@@ -65,9 +67,7 @@ class Lang {
 				return;
 			}
 			
-			$columns = array_shift($rows);
-			
-			
+			$columns = array_shift($rows);		
 			
 			if(false === ($key_key = array_search(self::DEFAULT_LANG, $columns))) {
 				return;

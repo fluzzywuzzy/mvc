@@ -10,15 +10,18 @@ class View {
 		'footer' => '',
 		'breadcrumb' => array(),
 		'html_class' => array(),
-		'body_class' => array('fix-header', 'fix-sidebar', 'card-no-border', ENDPOINT)
+		'body_class' => array('fix-header', 'fix-sidebar', 'card-no-border')
 	);
 
 
 	public function __construct($view, $shared = false) {
 		$this->_view = self::path($view, $shared);
+
 		if(Auth::get_lang()) {
 			$this->_data['body_class'][] = 'lang-' . Auth::get_lang();
 		}
+		
+		$this->_data['body_class'][] = Helper::constant('ENDPOINT');
 	}
 
 
@@ -89,15 +92,19 @@ class View {
 
 
 	static public function path($filename = '', $shared = false) {
+		if(!defined('ENDPOINT')) {
+			throw new Problem('ENDPOINT is undefined.');
+		}
+
 		if($shared) {
 			$base = Helper::root_dir() . '/app/views/shared';	
 		} else {
-			$base = Helper::root_dir() . '/app/views/' . ENDPOINT;
+			$base = Helper::root_dir() . '/app/views/' . Helper::constant('ENDPOINT');
 		}
 
 		if(empty($filename)) return $base;
 
-		if(strpos('.php', $filename) === false) {
+		if(strpos($filename, '.php') === false) {
 			$filename .= '.php';
 		}
 

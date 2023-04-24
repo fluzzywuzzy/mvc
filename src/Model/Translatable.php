@@ -97,7 +97,7 @@
 					$this->put($translated_columns[$key], static::next_translation_id());
 				}
 
-				$update->execute(array(
+				return $update->execute(array(
 					'translation_id' => $this->data[$translated_columns[$key]],
 					'lang' => $lang,
 					'text' => $value
@@ -105,19 +105,17 @@
 			}
 
 			// Delete
-			else {
-				if(!$delete) {
-					$delete = static::db()->prepare(sprintf(
-						'DELETE FROM %1$s WHERE %2$s = :translation_id AND %3$s = :lang',
-						static::TRANSLATIONS_TABLE, static::TRANSLATIONS_TABLE_ID, static::TRANSLATIONS_TABLE_LANG
-					));
-				}
-
-				$update->execute(array(
-					'translation_id' => $this->data[$translated_columns[$key]],
-					'lang' => $lang
+			if(!$delete) {
+				$delete = static::db()->prepare(sprintf(
+					'DELETE FROM %1$s WHERE %2$s = :translation_id AND %3$s = :lang',
+					static::TRANSLATIONS_TABLE, static::TRANSLATIONS_TABLE_ID, static::TRANSLATIONS_TABLE_LANG
 				));
 			}
+
+			return $delete->execute(array(
+				'translation_id' => $this->data[$translated_columns[$key]],
+				'lang' => $lang
+			));
 		}
 
 
@@ -175,7 +173,7 @@
 			}
 
 			foreach($strings as $key => $value) {
-				$model->put($key, $value, static::DEFAULT_LANG);
+				$model->put($key, $value);
 			}
 
 			return $model;
