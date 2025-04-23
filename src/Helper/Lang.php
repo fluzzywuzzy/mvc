@@ -31,7 +31,7 @@ class Lang {
 		
 		if(empty(self::$lang) && Auth::get_lang()) {
 			self::$lang = Auth::get_lang();
-		} else {
+		} else if (empty(self::$lang)) {
 			self::$lang = self::DEFAULT_LANG;
 		}
 
