@@ -46,7 +46,7 @@ class Sanitize {
 
 
 	static public function name($name = '') {
-		$name = filter_var($name, FILTER_SANITIZE_STRING);
+		$name = htmlspecialchars($name, ENT_QUOTES);
 		$name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
 
 		return $name;
@@ -54,7 +54,7 @@ class Sanitize {
 
 
 	static public function text($text) {
-		return filter_var($text, FILTER_SANITIZE_STRING);
+		return htmlspecialchars($text, ENT_QUOTES);
 	}
 	
 	
