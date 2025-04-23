@@ -56,9 +56,8 @@ class Lang {
 		
 		$lang_slug = 'lang_' . self::$lang;
 
-		if(self::$use_cache) {
-			self::$strings = self::cache_get($lang_slug, filemtime(self::$translations_file)) ?: [];
-		} else {
+		if (!self::$use_cache || false === (self::$strings = self::cache_get($lang_slug, filemtime(self::$translations_file)))) {
+
 			self::$strings = array();
 			
 			$rows = self::parse_csv(file_get_contents(self::$translations_file));
@@ -80,7 +79,7 @@ class Lang {
 				
 				self::$strings[$row[$key_key]] = ($value_key !== false ? $row[$value_key] : '');
 			}
-			
+
 			if(self::$use_cache) {
 				self::cache_set($lang_slug, self::$strings);
 			}
@@ -158,7 +157,6 @@ class Lang {
 		if(is_array($value)) {
 			$value = json_encode($value);
 		}
-		
 		return file_put_contents(self::$cache_path . '/' . $key, $value);
 	}
 	
