@@ -13,7 +13,7 @@ class Router {
 	
 	
 	public function route($input) {
-		$input = trim($input, '/');
+		$input = $input == null ? '' : trim($input, '/');
 		
 		foreach($this->routes as $route => $controller) {
 			$this->keys = array();
